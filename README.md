@@ -70,7 +70,8 @@ ontologies/Wine/wine.rdf
 python generate_cqs.py
 ```
 
-Progress is logged to the console, and the output CSV is flushed after every project, so partial results are kept if the run is interrupted.
+Progress is logged to the console, and the output CSV is flushed after every project,
+so partial results are kept if the run is interrupted.
 
 ## Output
 
