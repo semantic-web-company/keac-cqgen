@@ -1,6 +1,0 @@
-Project Name,Name,Description,Scenario,Dataset,Link
-HACID,Medical diagnostics,,"A case of internal medicine reports about a patient that is found with painless jaundice, pruritus perceived as debilitating, weight loss of 15 pounds over 3 months with associated fatigue and anorexia. Additionally, the patient is affected by type 2 diabetes mellitus with difficulty controlling insulin, and hyperbilirubinemia. 
-
-A single case can be associated with a list of solutions provided by the creator of the case. If more than one solution is provided by the creator, then one must be identified as primary and other as secondary. The case is evaluated by 5 healthcare professionals who formulated their diagnoses by taking into account the findings. Each healthcare professional provides a collection of ordered diagnoses. The ordering is based on relevance. 
-
-Additionally, each healthcare professional is associated with personal details about specialty, seniority, country, and organisation of affiliation.",,
