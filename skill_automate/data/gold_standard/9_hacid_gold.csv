@@ -1,0 +1,105 @@
+Project Name,Name,Description,Ontology Description,Scenario,Competency Question,SPARQL Query,Dataset,Link
+HACID,Medical diagnostics,,,"A case of internal medicine reports about a patient that is found with painless jaundice, pruritus perceived as debilitating, weight loss of 15 pounds over 3 months with associated fatigue and anorexia. Additionally, the patient is affected by type 2 diabetes mellitus with difficulty controlling insulin, and hyperbilirubinemia. 
+
+A single case can be associated with a list of solutions provided by the creator of the case. If more than one solution is provided by the creator, then one must be identified as primary and other as secondary. The case is evaluated by 5 healthcare professionals who formulated their diagnoses by taking into account the findings. Each healthcare professional provides a collection of ordered diagnoses. The ordering is based on relevance. 
+
+Additionally, each healthcare professional is associated with personal details about specialty, seniority, country, and organisation of affiliation.","Which is the relevance order of a diagnosis provided by a certain healthcare
+professional?","PREFIX : <https://w3id.org/hacid/example-data/>
+PREFIX top: <https://w3id.org/hacid/onto/top-level/>
+PREFIX jdg: <https://w3id.org/hacid/onto/core/judgement/>
+PREFIX mdx: <https://w3id.org/hacid/onto/medical-dx/>
+SELECT ?evaluation ?rank
+WHERE {
+?ranking a mdx:RankedClinicalEvaluation ;
+mdx:withRank ?rank ;
+mdx:ranks ?evaluation ;
+jdg:hasJudge :professional
+}",,
+HACID,Medical diagnostics,,,"A case of internal medicine reports about a patient that is found with painless jaundice, pruritus perceived as debilitating, weight loss of 15 pounds over 3 months with associated fatigue and anorexia. Additionally, the patient is affected by type 2 diabetes mellitus with difficulty controlling insulin, and hyperbilirubinemia. 
+
+A single case can be associated with a list of solutions provided by the creator of the case. If more than one solution is provided by the creator, then one must be identified as primary and other as secondary. The case is evaluated by 5 healthcare professionals who formulated their diagnoses by taking into account the findings. Each healthcare professional provides a collection of ordered diagnoses. The ordering is based on relevance. 
+
+Additionally, each healthcare professional is associated with personal details about specialty, seniority, country, and organisation of affiliation.","What is the seniority, specialty, and organisation of a healthcare professional
+that performs a diagnosis?","PREFIX : <https://w3id.org/hacid/example-data/>
+PREFIX top: <https://w3id.org/hacid/onto/top-level/>
+PREFIX ar: <https://w3id.org/hacid/onto/core/agentrole/>
+PREFIX mdx: <https://w3id.org/hacid/onto/medical-dx/>
+SELECT ?professional ?seniority ?specialty ?organisation
+37
+WHERE {
+?professional a mdx:HeatlhcareProfessional .
+?professionalRole a mdx:HeatlhcareProfessionalRole ;
+ar:involvesAgent ?professional;
+mdx:hasSeniority ?seniority ;
+mdx:hasSpecialty ?specialty ;
+mdx:worksFor ?organisation .
+?evaluation a mdx:ClinicalEvaluation ;
+mdx:hasDiagnostician ?professional ;
+mdx:hasDiagnosis ?diagnosis .
+?diagnosis a mdx:Diagnosis ;
+^mdx:isInScopeOfDiagnosis/top:describes :viral-pneumonia
+}",,
+HACID,Medical diagnostics,,,"A case of internal medicine reports about a patient that is found with painless jaundice, pruritus perceived as debilitating, weight loss of 15 pounds over 3 months with associated fatigue and anorexia. Additionally, the patient is affected by type 2 diabetes mellitus with difficulty controlling insulin, and hyperbilirubinemia. 
+
+A single case can be associated with a list of solutions provided by the creator of the case. If more than one solution is provided by the creator, then one must be identified as primary and other as secondary. The case is evaluated by 5 healthcare professionals who formulated their diagnoses by taking into account the findings. Each healthcare professional provides a collection of ordered diagnoses. The ordering is based on relevance. 
+
+Additionally, each healthcare professional is associated with personal details about specialty, seniority, country, and organisation of affiliation.",What is the disorder a diagnosis targets?,"PREFIX : <https://w3id.org/hacid/example-data/>
+PREFIX mdx: <https://w3id.org/hacid/onto/medical-dx/>
+SELECT ?diagnosis ?disorder
+WHERE {
+?diagnosis a mdx:Diagnosis ;
+^mdx:isInScopeOfDiagnosis/top:describes ?disorder
+}",,
+HACID,Medical diagnostics,,,"A case of internal medicine reports about a patient that is found with painless jaundice, pruritus perceived as debilitating, weight loss of 15 pounds over 3 months with associated fatigue and anorexia. Additionally, the patient is affected by type 2 diabetes mellitus with difficulty controlling insulin, and hyperbilirubinemia. 
+
+A single case can be associated with a list of solutions provided by the creator of the case. If more than one solution is provided by the creator, then one must be identified as primary and other as secondary. The case is evaluated by 5 healthcare professionals who formulated their diagnoses by taking into account the findings. Each healthcare professional provides a collection of ordered diagnoses. The ordering is based on relevance. 
+
+Additionally, each healthcare professional is associated with personal details about specialty, seniority, country, and organisation of affiliation.",What are the specialties of a clinical case?,"PREFIX : <https://w3id.org/hacid/example-data/>
+PREFIX mdx: <https://w3id.org/hacid/onto/medical-dx/>
+SELECT ?specialty
+WHERE {
+:cx a mdx:ClinicalCase ;
+mdx:hasSpecialty ?specialty .
+?specialty a mdx:Specialty
+}",,
+HACID,Medical diagnostics,,,"A case of internal medicine reports about a patient that is found with painless jaundice, pruritus perceived as debilitating, weight loss of 15 pounds over 3 months with associated fatigue and anorexia. Additionally, the patient is affected by type 2 diabetes mellitus with difficulty controlling insulin, and hyperbilirubinemia. 
+
+A single case can be associated with a list of solutions provided by the creator of the case. If more than one solution is provided by the creator, then one must be identified as primary and other as secondary. The case is evaluated by 5 healthcare professionals who formulated their diagnoses by taking into account the findings. Each healthcare professional provides a collection of ordered diagnoses. The ordering is based on relevance. 
+
+Additionally, each healthcare professional is associated with personal details about specialty, seniority, country, and organisation of affiliation.",What are the diagnoses suggested by healthcare professionals?,"PREFIX : <https://w3id.org/hacid/example-data/>
+PREFIX top: <https://w3id.org/hacid/onto/top-level/>
+PREFIX mdx: <https://w3id.org/hacid/onto/medical-dx/>
+SELECT ?diagnosis ?disorderDescr ?disorder
+WHERE {
+?evaluation a mdx:ClinicalEvaluation ;
+mdx:hasDiagnosis ?diagnosis ;
+mdx:hasDiagnostician ?agent .
+?disorderDescr a mdx:DisorderDescription ;
+mdx:isInScopeOfDiagnosis ?diagnosis ;
+top:describes ?disorder .
+?agent a mdx:HeatlhcareProfessional .
+?disorder a mdx:Disorder
+}",,
+HACID,Medical diagnostics,,,"""A case of internal medicine reports about a patient that is found with painless jaundice, pruritus perceived as debilitating, weight loss of 15 pounds over 3 months with associated fatigue and anorexia. Additionally, the patient is affected by type 2 diabetes mellitus with difficulty controlling insulin, and hyperbilirubinemia. 
+
+A single case can be associated with a list of solutions provided by the creator of the case. If more than one solution is provided by the creator, then one must be identified as primary and other as secondary. The case is evaluated by 5 healthcare professionals who formulated their diagnoses by taking into account the findings. Each healthcare professional provides a collection of ordered diagnoses. The ordering is based on relevance. 
+
+Additionally, each healthcare professional is associated with personal details about specialty, seniority, country, and organisation of affiliation.""",What are the solutions of a case?,"PREFIX : <https://w3id.org/hacid/example-data/>
+PREFIX mdx: <https://w3id.org/hacid/onto/medical-dx/>
+SELECT ?case ?evaluation
+WHERE {
+?case a mdx:ClinicalCase .
+?evaluation a mdx:ClinicalEvaluation ;
+mdx:forClinicalCase ?case
+}",,
+HACID,Medical diagnostics,,,"""A case of internal medicine reports about a patient that is found with painless jaundice, pruritus perceived as debilitating, weight loss of 15 pounds over 3 months with associated fatigue and anorexia. Additionally, the patient is affected by type 2 diabetes mellitus with difficulty controlling insulin, and hyperbilirubinemia. 
+
+A single case can be associated with a list of solutions provided by the creator of the case. If more than one solution is provided by the creator, then one must be identified as primary and other as secondary. The case is evaluated by 5 healthcare professionals who formulated their diagnoses by taking into account the findings. Each healthcare professional provides a collection of ordered diagnoses. The ordering is based on relevance. 
+
+Additionally, each healthcare professional is associated with personal details about specialty, seniority, country, and organisation of affiliation.""",What are the findings reported for a case?,"PREFIX : <https://w3id.org/hacid/example-data/>
+PREFIX mdx: <https://w3id.org/hacid/onto/medical-dx/>
+SELECT ?case ?finding
+WHERE {
+?case a mdx:ClinicalCase ;
+mdx:hasFinding ?finding
+}",,

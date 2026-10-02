@@ -81,16 +81,21 @@ def parse_questions(text):
 def main():
     load_dotenv()
 
-    with open(os.environ["SYSTEM_PROMPT"], encoding="utf-8") as f:
-        system_prompt = f.read()
+    with open(os.environ["SYSTEM_PROMPT_CQ"], encoding="utf-8") as f:
+        system_prompt_cq = f.read()
+
+    with open(os.environ["SYSTEM_PROMPT_ONTOLOGY"], encoding="utf-8") as f:
+        system_prompt_ontology = f.read()
 
     num_cqs = int(os.getenv("NUM_CQS", "12"))
     model = os.getenv("GEMMA_MODEL", "gemma4")
     client = OpenAI(base_url=os.getenv("GEMMA_BASE_URL"), api_key=os.getenv("GEMMA_API_KEY", "dummy"))
 
-    gold = pd.read_csv(os.environ["BENCHMARK_INPUT"], sep=",", on_bad_lines="skip").fillna("")
+    gold = pd.read_csv(os.environ["BENCHMARK_INPUT"], sep=";", on_bad_lines="skip").fillna("")
     gold.columns = gold.columns.str.strip()
     projects = gold.drop_duplicates(subset=["Project Name"])
+    scenarios = gold[gold['Scenario'].astype(bool)]
+    datasets = gold[gold['Dataset'].astype(bool)]
 
     with open(os.getenv("QUEUE_FILE_PATH", "queue.csv"), encoding="utf-8") as f:
         ontologies = {os.path.basename(os.path.dirname(r["OntologyPath"])): r["OntologyPath"]
@@ -103,9 +108,11 @@ def main():
         writer = csv.writer(out)
         writer.writerow(["Project Name", "Name", "Scenario", "Dataset", "Link", "generated"])
 
-        for _, row in projects.iterrows():
+
+        #CQ generation from Scenario
+        for _, row in scenarios.iterrows():
             project, scenario = row["Project Name"], row["Scenario"]
-            logger.info(f"Processing: {project}")
+            logger.info(f"Processing: {project}:{scenario}")
 
             user_prompt = (
                 f"<scenario>\n{scenario or 'No scenario provided.'}\n</scenario>\n\n"
@@ -118,7 +125,7 @@ def main():
             questions = []
             for attempt in range(3):
                 try:
-                    questions = parse_questions(call_gemma(client, model, system_prompt, user_prompt))
+                    questions = parse_questions(call_gemma(client, model, system_prompt_cq, user_prompt))
                     if questions:
                         break
                 except Exception as e:
@@ -128,6 +135,53 @@ def main():
                 writer.writerow([project, row["Name"], scenario, row["Dataset"], row["Link"], q])
             out.flush()
             logger.info(f"Saved {len(questions)} questions.")
+
+        # # CQ generation from dataset
+        # for _, row in datasets.iterrows():
+        #     project, scenario = row["Project Name"], row["Dataset"]
+        #     logger.info(f"Processing: {project}")
+        #
+        #     user_prompt = (
+        #         f"<dataset>\n{scenario or 'No dataset provided.'}\n</dataset>\n\n"
+        #         f"<ontology_info>\nLink/URI: {row['Link'] or 'N/A'}\n"
+        #         f"{ontology_summary(ontologies.get(project), scenario)}\n</ontology_info>\n\n"
+        #         f"<request>\nGenerate an ontology describing the given dataset following the described procedure."
+        #         f"Output the final vocabulary as a single, valid Turtle (`.ttl`) document.\n</request>"
+        #     )
+        #
+        #     questions = []
+        #     ontology = ""
+        #     for attempt in range(3):
+        #         try:
+        #             ontology = parse_questions(call_gemma(client, model, system_prompt_ontology, user_prompt))
+        #             if ontology:
+        #                 break
+        #         except Exception as e:
+        #             logger.warning(f"Attempt {attempt + 1} failed for {project}: {e}")
+        #
+        #     if ontology:
+        #         user_prompt = (
+        #             f"<ontology>\n{ontology or 'No ontology provided.'}\n</ontology>\n\n"
+        #             f"<ontology_info>\nLink/URI: {row['Link'] or 'N/A'}\n"
+        #             f"{ontology_summary(ontologies.get(project), scenario)}\n</ontology_info>\n\n"
+        #             f"<request>\nGenerate about {num_cqs} generic Competency Questions for this "
+        #             f"scenario, following the rules. Return ONLY a valid JSON array of strings.\n</request>"
+        #         )
+        #
+        #         for attempt in range(3):
+        #             try:
+        #                 questions = parse_questions(call_gemma(client, model, system_prompt_cq, user_prompt))
+        #                 if questions:
+        #                     break
+        #             except Exception as e:
+        #                 logger.warning(f"Attempt {attempt + 1} failed for {project}: {e}")
+        #
+        #         for q in questions:
+        #             writer.writerow([project, row["Name"], scenario, row["Dataset"], row["Link"], q])
+        #         out.flush()
+        #         logger.info(f"Saved {len(questions)} questions.")
+
+
 
 if __name__ == "__main__":
     main()
