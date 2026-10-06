@@ -1,3 +1,4 @@
 .env
 skill_automate/.env
 .idea
+.DS_Store
